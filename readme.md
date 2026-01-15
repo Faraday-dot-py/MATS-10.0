@@ -14,7 +14,8 @@ Steering prefix: *Some prefix for a prompt that steers a model's behavior.*
 We take a reference steering prefix ($s_{\text{ref}} = \text{"Talk only about cats."}$) and a batch of user prompt suffixes ($\mathcal{Z}$), with the goal of finding different prefixes that induce similar behavior to $(s_{ref})$.  
 For these experiments, I used Google's `gemma-2-2B-IT`, and I measure "similar behavior" by using teacher-forced cross-entropy to a reference completion generated from $(s_{ref}+z)$
 
-![][image1]  
+<img width="2048" height="193" alt="0" src="https://github.com/user-attachments/assets/6a7d082d-82b7-4e5c-80dd-2ffd3042059a" />
+
 *Fig 0: Final pipeline to generate a steering prompt*
 
 ## High-level Takeaways
@@ -33,7 +34,8 @@ For these experiments, I used Google's `gemma-2-2B-IT`, and I measure "similar b
 I first tested whether this is possible with traditional gradient methods by allowing the prefix to be a continuous embedding and optimizing to match a reference internal state at a specific residual stream layer. This worked very well, as activation loss dropped smoothly and cosine similarity approached $\sim 0.99$.
 
 **Main takeaway:** *Soft prompts can represent a prefix well in continuous space*.  
-![][image2]  
+<img width="1067" height="468" alt="1" src="https://github.com/user-attachments/assets/2a2527ef-2184-4b94-8e04-aa6ab6768827" />
+
 *Figure 1: loss + cosine similarity vs optimization step. (higher is better)*
 
 ### 2) Discrete Projection is a Bottleneck
@@ -45,10 +47,12 @@ When I converted soft prompts into tokens using nearest-neighbor projection, the
 * *Good solutions exist in embedding space, but don’t map cleanly to text, making projection the issue.*  
 * *Some core concept-tokens persist across layers, while other information is corrupted (I'd like to study this separately\!)*
 
-![][image3]  
+<img width="1067" height="468" alt="2" src="https://github.com/user-attachments/assets/f9af095d-537d-4ab2-97ed-1ac592a2bf28" />
+
 *Fig 2: Loss by layer using state matching (low orange values are better)*
 
-![][image4]  
+<img width="1067" height="468" alt="3" src="https://github.com/user-attachments/assets/6517e58f-b3ce-4b97-b636-2fe07a463f2b" />
+
 *Fig 3: Loss curves over time per layer. (lines ending lower & further left are better)*
 
 | Layer | Step stopped at | Alternative prompt | Sample continuation (first few tokens after prompt) |
@@ -70,7 +74,8 @@ This coarse/fine knob method was unreliable run-to-run, but across multiple atte
 
 **Main takeaway:** *soft optimization combined with discrete repair can produce nontrivial steering prefixes that partially match reference behavior across a suffix distribution.*
 
-![][image5]  
+<img width="1307" height="707" alt="4" src="https://github.com/user-attachments/assets/25b8c2c5-030d-41de-ba27-9b7bd343488c" />
+
 *Fig 5: The initial CE versus the refined CE after HotFlip. (less is better, blue)*
 
 # Full Write-up
@@ -152,10 +157,12 @@ Two variants show up in my experiments:
 Prefix-suffix behavior matching works extremely well, often resulting in  
 $(CE \approx 0.415 \pm 0.082,\space min=0.268,\space max=0.52,\space n=10)$  
  However, this does not transfer past discretization.  
-![][image6]  
+<img width="1067" height="468" alt="5" src="https://github.com/user-attachments/assets/93aff74a-9fdd-4e92-b6a1-c34b16b3606f" />
+
 *Fig 0: The training loss for a pure prefix/suffix training attempt (lower is better)*
 
-*![][image7]*  
+<img width="1067" height="468" alt="6" src="https://github.com/user-attachments/assets/bb70bd3b-0a5f-4727-927e-c5e9435b5c0a" />
+
 *Fig 1: The CE after projection to discrete tokens (lower is better)*
 
 ## 3.2 Projection from soft prompts to tokens
